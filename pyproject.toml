@@ -1,0 +1,20 @@
+[project]
+name = "hypergraph-properties"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Aleksander Wojnarowicz", email = "alwojnarowicz@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "pandas>=2.2.3",
+    "scipy>=1.15.2",
+]
+
+[project.scripts]
+hypergraph-properties = "hypergraph_properties:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"

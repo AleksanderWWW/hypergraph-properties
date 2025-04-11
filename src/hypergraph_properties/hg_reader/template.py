@@ -14,10 +14,11 @@ logger = get_logger()
 
 class HypergraphReader(ABC):
     @abstractmethod
-    def parse_hg_data[V](self, hg_data: list[str]) -> Hypergraph[V]:
-        ...
+    def parse_hg_data[V](self, hg_data: list[str]) -> Hypergraph[V]: ...
 
-    def read_graph[V](self, filepath: str | os.PathLike, mode: str = "r") -> Hypergraph[V]:
+    def read_graph[V](
+        self, filepath: str | os.PathLike, mode: str = "r"
+    ) -> Hypergraph[V]:
         logger.info(f"reading file {filepath}")
 
         try:

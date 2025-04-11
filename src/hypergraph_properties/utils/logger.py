@@ -42,4 +42,5 @@ def _set_up_logging() -> None:
 
     hg_logger.setLevel(logging.INFO if LOGGING_ENABLED else logging.CRITICAL)
 
+
 _set_up_logging()

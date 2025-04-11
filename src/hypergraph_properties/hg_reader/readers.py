@@ -15,9 +15,7 @@ class SyntheticHGReader(HypergraphReader):
                 if int(vertex) > v_max:
                     v_max = int(vertex)
 
-        matrix = lil_array(
-            (v_max, num_hedges), dtype=bool
-        )
+        matrix = lil_array((v_max, num_hedges), dtype=bool)
 
         for idx_he, line in enumerate(hg_data):
             for vertex in line.split(","):

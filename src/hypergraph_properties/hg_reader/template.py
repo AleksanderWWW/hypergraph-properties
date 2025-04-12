@@ -1,5 +1,6 @@
 import os
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 from hypergraph_properties.hg_model import Hypergraph
 from hypergraph_properties.utils.logger import get_logger
@@ -16,7 +17,9 @@ class HypergraphReader(ABC):
     @abstractmethod
     def parse_hg_data(self, hg_data: list[str]) -> Hypergraph: ...
 
-    def read_graph(self, filepath: str | os.PathLike, mode: str = "r") -> Hypergraph:
+    def read_graph(
+        self, filepath: str | os.PathLike | Path, mode: str = "r"
+    ) -> Hypergraph:
         logger.info(f"reading file {filepath}")
 
         try:

@@ -18,3 +18,11 @@ corr = node_corr(hg, log_degrees=True)
 logger.info(f"node_corr(hg, log_degrees=True) = {corr.statistic} (p={corr.pvalue})")
 
 ```
+
+Output:
+
+```text
+[hypergraph-properties] [info   ] reading file ./data/tags-ask-ubuntu.txt
+[hypergraph-properties] [info   ] reading ./data/tags-ask-ubuntu.txt complete
+[hypergraph-properties] [info   ] node_corr(hg, log_degrees=True) = 0.3954907961556929 (p=5.7688107146332454e-114)
+```

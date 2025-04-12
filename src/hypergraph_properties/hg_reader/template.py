@@ -12,6 +12,11 @@ V = TypeVar("V")
 logger = get_logger()
 
 
+class HypergraphParsingError(Exception):
+    def __init__(self, msg: str) -> None:
+        self.message = msg
+
+
 class HypergraphReader(ABC):
     @abstractmethod
     def parse_hg_data[V](self, hg_data: list[str]) -> Hypergraph[V]: ...
@@ -29,4 +34,4 @@ class HypergraphReader(ABC):
 
         except Exception as e:
             logger.error(f"error while reading {filepath}: {e}")
-            raise e
+            raise HypergraphParsingError(f"error while reading {filepath}: {e}") from e

@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "click>=8.1.8",
+    "numba>=0.61.2",
     "pandas>=2.2.3",
     "scipy>=1.15.2",
     "statsmodels>=0.14.4",

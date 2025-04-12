@@ -1,11 +1,11 @@
-from scipy.sparse import lil_array, csr_array
+from scipy.sparse import csr_array, lil_array
 
 from hypergraph_properties.hg_model import Hypergraph
 from hypergraph_properties.hg_reader.template import HypergraphReader
 
 
 class SyntheticHGReader(HypergraphReader):
-    def parse_hg_data(self, hg_data: list[str]) -> Hypergraph[int]:
+    def parse_hg_data(self, hg_data: list[str]) -> Hypergraph:
         v_max = 1
         num_hedges = 0
 
@@ -25,7 +25,7 @@ class SyntheticHGReader(HypergraphReader):
 
 
 class EmpiricalHGReader(HypergraphReader):
-    def parse_hg_data(self, hg_data: list[str]) -> Hypergraph[int]:
+    def parse_hg_data(self, hg_data: list[str]) -> Hypergraph:
         v_max = 1
         num_hedges = 0
 

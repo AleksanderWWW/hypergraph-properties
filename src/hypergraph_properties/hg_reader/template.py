@@ -1,13 +1,8 @@
 import os
-
 from abc import ABC, abstractmethod
-from typing import TypeVar
 
 from hypergraph_properties.hg_model import Hypergraph
 from hypergraph_properties.utils.logger import get_logger
-
-
-V = TypeVar("V")
 
 logger = get_logger()
 
@@ -19,11 +14,9 @@ class HypergraphParsingError(Exception):
 
 class HypergraphReader(ABC):
     @abstractmethod
-    def parse_hg_data[V](self, hg_data: list[str]) -> Hypergraph[V]: ...
+    def parse_hg_data(self, hg_data: list[str]) -> Hypergraph: ...
 
-    def read_graph[V](
-        self, filepath: str | os.PathLike, mode: str = "r"
-    ) -> Hypergraph[V]:
+    def read_graph(self, filepath: str | os.PathLike, mode: str = "r") -> Hypergraph:
         logger.info(f"reading file {filepath}")
 
         try:

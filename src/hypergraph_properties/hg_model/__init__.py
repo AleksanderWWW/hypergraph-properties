@@ -1,12 +1,10 @@
 from dataclasses import dataclass
-from typing import Generic, TypeVar, Iterable
+from typing import Iterable
 
-from scipy.sparse import sparray
-
-V = TypeVar("V")
+from scipy.sparse import csr_array
 
 
 @dataclass
-class Hypergraph(Generic[V]):
-    vertex_meta: Iterable[V]
-    matrix: sparray
+class Hypergraph:
+    vertex_meta: Iterable[int]
+    matrix: csr_array

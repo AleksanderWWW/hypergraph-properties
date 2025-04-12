@@ -23,7 +23,7 @@ def main(filename: click.Path, fmt: str, out: click.Path | None) -> None:
     if out is not None:
         logger.info(f"final report will be saved to {out}")
     else:
-        logger.warning("final report will not be saved")
+        logger.warning("final report will not be saved - pass an out-file with --out <filename>")
 
     reader: HypergraphReader = {
         "empirical": EmpiricalHGReader,
@@ -39,5 +39,5 @@ def main(filename: click.Path, fmt: str, out: click.Path | None) -> None:
             corr = node_corr(
                 hg, log_degrees=log_degrees, log_avg_he_sizes=log_avg_he_sizes
             )
-            expr = f"corr = node_corr(hg, log_degrees={log_degrees}, log_avg_he_sizes={log_avg_he_sizes})"
+            expr = f"node_corr(hg, log_degrees={log_degrees}, log_avg_he_sizes={log_avg_he_sizes})"
             logger.info(f"{expr} = {corr.statistic} (p={corr.pvalue})")

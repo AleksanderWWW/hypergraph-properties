@@ -1,7 +1,7 @@
 import click
 
 from hypergraph_properties.hg_properties.corr import node_corr
-from hypergraph_properties.hg_reader.readers import EmpiricalHGReader, SyntheticHGReader
+from hypergraph_properties.hg_reader.readers import EmpiricalHGReader, SyntheticHGReader, HGFReader
 from hypergraph_properties.hg_reader.template import HypergraphReader
 from hypergraph_properties.utils.logger import get_logger
 
@@ -28,7 +28,8 @@ def main(filename: click.Path, fmt: str, out: click.Path | None) -> None:
     reader: HypergraphReader = {
         "empirical": EmpiricalHGReader,
         "synthetic": SyntheticHGReader,
-    }.get(fmt, EmpiricalHGReader)()
+        "hgf": HGFReader
+    }.get(fmt.lower(), HGFReader)()
 
     hg = reader.read_graph(filename)
 

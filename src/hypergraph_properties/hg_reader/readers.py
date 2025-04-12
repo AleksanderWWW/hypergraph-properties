@@ -60,3 +60,19 @@ class EmpiricalHGReader(HypergraphReader):
                 matrix[int(vertex.replace("'", "").strip()) - 1, idx_he] = True
 
         return Hypergraph(vertex_meta=range(1, v_max + 1), matrix=csr_array(matrix))
+
+
+class HGFReader(HypergraphReader):
+    def parse_hg_data(self, hg_data: list[str]) -> Hypergraph:
+        meta = hg_data[0].split(" ")
+        v_max, num_hedges = int(meta[0]), int(meta[1])
+
+        matrix = lil_array((v_max, num_hedges), dtype=bool)
+
+        for idx_he, line in enumerate(hg_data[1:]):
+            line = line.replace("=true", "")
+
+            for vertex in line.split(" "):
+                matrix[int(vertex.strip()) - 1, idx_he] = True
+
+        return Hypergraph(vertex_meta=range(1, v_max + 1), matrix=csr_array(matrix))

@@ -53,7 +53,7 @@ class EmpiricalHGReader(HypergraphReader):
                 num_hedges += 1
 
         logger.debug(f"dimensions parsed: {v_max} vertices, {num_hedges} hyperedges")
-        if v_max >= 10000000:
+        if v_max >= 100_000:
             matrix = dok_array((v_max, num_hedges), dtype=bool)
         else:
             matrix = lil_array((v_max, num_hedges), dtype=bool)

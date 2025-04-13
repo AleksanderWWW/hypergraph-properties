@@ -1,7 +1,10 @@
-from scipy.sparse import csr_array, lil_array
+from scipy.sparse import csr_array, lil_array, dok_array
 
+from hypergraph_properties.utils.logger import get_logger
 from hypergraph_properties.hg_model import Hypergraph
 from hypergraph_properties.hg_reader.template import HypergraphReader
+
+logger = get_logger()
 
 
 class SyntheticHGReader(HypergraphReader):
@@ -49,9 +52,15 @@ class EmpiricalHGReader(HypergraphReader):
             else:
                 num_hedges += 1
 
-        matrix = lil_array((v_max, num_hedges), dtype=bool)
+        logger.debug(f"dimensions parsed: {v_max} vertices, {num_hedges} hyperedges")
+        if v_max >= 10000000:
+            matrix = dok_array((v_max, num_hedges), dtype=bool)
+        else:
+            matrix = lil_array((v_max, num_hedges), dtype=bool)
+        logger.debug("matrix instantiated")
 
         for idx_he, line in enumerate(hg_data[edge_start_idx + 1 :]):
+            logger.debug(f"parsing line {edge_start_idx + 1 + idx_he}")
             line = line.replace("{", "").replace(
                 "}", ""
             )  # remove the '{' and '}' at each end
@@ -70,9 +79,11 @@ class HGFReader(HypergraphReader):
         matrix = lil_array((v_max, num_hedges), dtype=bool)
 
         for idx_he, line in enumerate(hg_data[1:]):
-            line = line.replace("=true", "")
+            line = line.replace("=true", "").replace("=1", "")
 
             for vertex in line.split(" "):
+                if vertex.strip() == "":
+                    continue
                 matrix[int(vertex.strip()) - 1, idx_he] = True
 
         return Hypergraph(vertex_meta=range(1, v_max + 1), matrix=csr_array(matrix))

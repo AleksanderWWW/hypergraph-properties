@@ -1,10 +1,14 @@
 import click
 
-from hypergraph_properties.hg_properties.corr import node_corr
-from hypergraph_properties.hg_reader.readers import EmpiricalHGReader, SyntheticHGReader, HGFReader
+from hypergraph_properties.hg_properties.corr import CorAlgorithm, node_corr
+from hypergraph_properties.hg_reader.readers import (
+    EmpiricalHGReader,
+    HGFReader,
+    SyntheticHGReader,
+)
 from hypergraph_properties.hg_reader.template import HypergraphReader
 from hypergraph_properties.reporting.html import generate_html_report
-from hypergraph_properties.reporting.result_set import PearsonNodeCor
+from hypergraph_properties.reporting.result_set import PearsonNodeCor, SpearmanNodeCor
 from hypergraph_properties.utils.logger import get_logger
 
 logger = get_logger()
@@ -26,24 +30,32 @@ def main(filename: click.Path, fmt: str, html_report: bool) -> None:
     reader: HypergraphReader = {
         "empirical": EmpiricalHGReader,
         "synthetic": SyntheticHGReader,
-        "hgf": HGFReader
+        "hgf": HGFReader,
     }.get(fmt.lower(), HGFReader)()
 
     hg = reader.read_graph(filename)
 
-    cors = []
+    cors_p = []
+    cors_s = []
 
     for log_avg_he_sizes in [False, True]:
         for log_degrees in [False, True]:
-            corr = node_corr(
+            corr_p = node_corr(
                 hg, log_degrees=log_degrees, log_avg_he_sizes=log_avg_he_sizes
             )
-            expr = f"node_corr(hg, log_degrees={log_degrees}, log_avg_he_sizes={log_avg_he_sizes})"
-            logger.info(f"{expr} = {corr.statistic} (p={corr.pvalue})")
-            cors.append(corr)
+            corr_s = node_corr(
+                hg,
+                log_degrees=log_degrees,
+                log_avg_he_sizes=log_avg_he_sizes,
+                algorithm=CorAlgorithm.SPEARMAN,
+            )
 
-    p_cor = PearsonNodeCor(*cors)
+            cors_p.append(corr_p)
+            cors_s.append(corr_s)
+
+    p_cor = PearsonNodeCor(*cors_p)
+    s_cor = SpearmanNodeCor(*cors_s)
 
     if html_report:
-        saved_to = generate_html_report(str(filename), hg, fmt, p_cor)
+        saved_to = generate_html_report(str(filename), hg, fmt, p_cor, s_cor)
         logger.info(f"HTML report saved at {saved_to}")

@@ -1,8 +1,8 @@
-from scipy.sparse import csr_array, lil_array, dok_array
+from scipy.sparse import csr_array, dok_array, lil_array
 
-from hypergraph_properties.utils.logger import get_logger
 from hypergraph_properties.hg_model import Hypergraph
 from hypergraph_properties.hg_reader.template import HypergraphReader
+from hypergraph_properties.utils.logger import get_logger
 
 logger = get_logger()
 
@@ -24,7 +24,9 @@ class SyntheticHGReader(HypergraphReader):
             for vertex in line.split(","):
                 matrix[int(vertex) - 1, idx_he] = True
 
-        return Hypergraph(name=self.hg_name, vertex_meta=range(1, v_max + 1), matrix=csr_array(matrix))
+        return Hypergraph(
+            name=self.hg_name, vertex_meta=range(1, v_max + 1), matrix=csr_array(matrix)
+        )
 
 
 class EmpiricalHGReader(HypergraphReader):
@@ -68,7 +70,9 @@ class EmpiricalHGReader(HypergraphReader):
             for vertex in line.split(","):
                 matrix[int(vertex.replace("'", "").strip()) - 1, idx_he] = True
 
-        return Hypergraph(name=self.hg_name, vertex_meta=range(1, v_max + 1), matrix=csr_array(matrix))
+        return Hypergraph(
+            name=self.hg_name, vertex_meta=range(1, v_max + 1), matrix=csr_array(matrix)
+        )
 
 
 class HGFReader(HypergraphReader):
@@ -86,4 +90,6 @@ class HGFReader(HypergraphReader):
                     continue
                 matrix[int(vertex.strip()) - 1, idx_he] = True
 
-        return Hypergraph(name=self.hg_name, vertex_meta=range(1, v_max + 1), matrix=csr_array(matrix))
+        return Hypergraph(
+            name=self.hg_name, vertex_meta=range(1, v_max + 1), matrix=csr_array(matrix)
+        )

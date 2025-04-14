@@ -24,7 +24,7 @@ class SyntheticHGReader(HypergraphReader):
             for vertex in line.split(","):
                 matrix[int(vertex) - 1, idx_he] = True
 
-        return Hypergraph(vertex_meta=range(1, v_max + 1), matrix=csr_array(matrix))
+        return Hypergraph(name=self.hg_name, vertex_meta=range(1, v_max + 1), matrix=csr_array(matrix))
 
 
 class EmpiricalHGReader(HypergraphReader):
@@ -68,7 +68,7 @@ class EmpiricalHGReader(HypergraphReader):
             for vertex in line.split(","):
                 matrix[int(vertex.replace("'", "").strip()) - 1, idx_he] = True
 
-        return Hypergraph(vertex_meta=range(1, v_max + 1), matrix=csr_array(matrix))
+        return Hypergraph(name=self.hg_name, vertex_meta=range(1, v_max + 1), matrix=csr_array(matrix))
 
 
 class HGFReader(HypergraphReader):
@@ -86,4 +86,4 @@ class HGFReader(HypergraphReader):
                     continue
                 matrix[int(vertex.strip()) - 1, idx_he] = True
 
-        return Hypergraph(vertex_meta=range(1, v_max + 1), matrix=csr_array(matrix))
+        return Hypergraph(name=self.hg_name, vertex_meta=range(1, v_max + 1), matrix=csr_array(matrix))

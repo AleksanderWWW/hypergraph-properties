@@ -27,13 +27,13 @@ def main(filename: click.Path, fmt: str, html_report: bool) -> None:
     if not any((html_report,)):  # TODO: other saving options e.g. json, csv
         logger.warning("no saving option passed - results will not be persisted")
 
-    reader: HypergraphReader = {
+    reader: HypergraphReader = {  # type: ignore[abstract]
         "empirical": EmpiricalHGReader,
         "synthetic": SyntheticHGReader,
         "hgf": HGFReader,
     }.get(fmt.lower(), HGFReader)()
 
-    hg = reader.read_graph(filename)
+    hg = reader.read_graph(str(filename))
 
     cors_p = []
     cors_s = []

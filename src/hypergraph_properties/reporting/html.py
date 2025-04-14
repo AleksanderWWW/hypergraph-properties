@@ -1,9 +1,9 @@
 from pathlib import Path
 
-import dominate
-import dominate.tags as tags
+import dominate  # type: ignore[import-untyped]
+import dominate.tags as tags  # type: ignore[import-untyped]
 import pandas as pd
-from dominate.util import raw
+from dominate.util import raw  # type: ignore[import-untyped]
 from pandas.io.formats.style import Styler
 
 from hypergraph_properties.hg_model import Hypergraph

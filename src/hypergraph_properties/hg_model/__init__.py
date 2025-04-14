@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Iterable
 
-from scipy.sparse import csr_array
+from scipy.sparse import csr_array  # type: ignore[import-untyped]
 
 
 @dataclass

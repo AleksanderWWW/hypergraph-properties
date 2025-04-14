@@ -5,8 +5,8 @@ __all__ = [
 
 from dataclasses import dataclass
 
-from scipy.stats._result_classes import PearsonRResult
-from scipy.stats._stats_py import SignificanceResult as SpearmanRResult
+from scipy.stats._result_classes import PearsonRResult  # type: ignore[import-untyped]
+from scipy.stats._stats_py import SignificanceResult as SpearmanRResult  # type: ignore[import-untyped]
 
 
 @dataclass(frozen=True)

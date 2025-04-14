@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pandas as pd
 import dominate
 import dominate.tags as tags
@@ -8,7 +10,7 @@ from hypergraph_properties.hg_model import Hypergraph
 from hypergraph_properties.reporting.result_set import PearsonNodeCor
 
 
-def generate_html_report(filepath: str, hg: Hypergraph, fmt: str, p_cor: PearsonNodeCor) -> None:
+def generate_html_report(filepath: str, hg: Hypergraph, fmt: str, p_cor: PearsonNodeCor) -> Path:
     title = f"Report for {hg.name}"
 
     save_path = f"{hg.name}.html"
@@ -30,6 +32,8 @@ def generate_html_report(filepath: str, hg: Hypergraph, fmt: str, p_cor: Pearson
 
     with open(save_path, "w") as fp:
         fp.write(doc.render())
+
+    return Path(save_path)
 
 
 def _create_metadata_table(hg: Hypergraph, filepath: str, fmt: str) -> pd.DataFrame:

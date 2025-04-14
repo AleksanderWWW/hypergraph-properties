@@ -20,8 +20,8 @@ def main(filename: click.Path, fmt: str, html_report: bool) -> None:
     logger.info(f"running `hypergraph-properties` pipeline on file {filename}")
     logger.info(f"expecting hypergraph to be in `{fmt}` format")
 
-    if not html_report:
-        logger.warning("final report will not be saved - pass `--html-report`")
+    if not any((html_report,)):  # TODO: other saving options e.g. json, csv
+        logger.warning("no saving option passed - results will not be persisted")
 
     reader: HypergraphReader = {
         "empirical": EmpiricalHGReader,
@@ -45,4 +45,5 @@ def main(filename: click.Path, fmt: str, html_report: bool) -> None:
     p_cor = PearsonNodeCor(*cors)
 
     if html_report:
-        generate_html_report(str(filename), hg, fmt, p_cor)
+        saved_to = generate_html_report(str(filename), hg, fmt, p_cor)
+        logger.info(f"HTML report saved at {saved_to}")

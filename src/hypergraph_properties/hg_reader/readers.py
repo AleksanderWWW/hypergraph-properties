@@ -14,14 +14,14 @@ class SyntheticHGReader(HypergraphReader):
 
         for line in hg_data:
             num_hedges += 1
-            for vertex in line.split(","):
+            for vertex in line.split("," if "," in line else " "):
                 if int(vertex) > v_max:
                     v_max = int(vertex)
 
         matrix = lil_array((v_max, num_hedges), dtype=bool)
 
         for idx_he, line in enumerate(hg_data):
-            for vertex in line.split(","):
+            for vertex in line.split("," if "," in line else " "):
                 matrix[int(vertex) - 1, idx_he] = True
 
         assert self.hg_name is not None

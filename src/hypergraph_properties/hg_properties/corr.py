@@ -1,17 +1,26 @@
+from enum import Enum, auto
+
 import numpy as np
-from numba import njit
+from numba import njit  # type: ignore[import-untyped]
 from numpy.typing import NDArray
-from scipy import stats
-from scipy.stats._result_classes import PearsonRResult
+from scipy import stats  # type: ignore[import-untyped]
+from scipy.stats._result_classes import PearsonRResult  # type: ignore[import-untyped]
+from scipy.stats._stats_py import SignificanceResult as SpearmanRResult  # type: ignore[import-untyped]
 
 from hypergraph_properties.hg_model import Hypergraph
+
+
+class CorAlgorithm(Enum):
+    PEARSON = auto()
+    SPEARMAN = auto()
 
 
 def node_corr(
     hg: Hypergraph,
     log_degrees: bool = False,
     log_avg_he_sizes: bool = False,
-) -> PearsonRResult:
+    algorithm: CorAlgorithm = CorAlgorithm.PEARSON,
+) -> PearsonRResult | SpearmanRResult:
     vertex_indices = np.array([v - 1 for v in hg.vertex_meta], dtype=np.int32)
     matrix = hg.matrix
 
@@ -26,25 +35,29 @@ def node_corr(
     if log_avg_he_sizes:
         avg_he_sizes = np.log(avg_he_sizes + 1)
 
-    return stats.pearsonr(degrees, avg_he_sizes)
+    if algorithm == CorAlgorithm.PEARSON:
+        return stats.pearsonr(degrees, avg_he_sizes)
+    return stats.spearmanr(degrees, avg_he_sizes)
 
 
 @njit
-def row_sums(indptr: NDArray[np.int32], data: NDArray[np.bool], n_rows: int) -> NDArray[np.int64]:
+def row_sums(
+    indptr: NDArray[np.int32], data: NDArray[np.bool], n_rows: int
+) -> NDArray[np.int64]:
     result = np.zeros(n_rows, dtype=np.float64)
     for i in range(n_rows):
         result[i] = np.sum(data[indptr[i] : indptr[i + 1]])
-    return result
+    return result  # type: ignore
 
 
 @njit
 def compute_avg_he_sizes(
-        vertex_indices: NDArray[np.int32],
-        indptr: NDArray[np.int32],
-        indices: NDArray[np.int32],
-        data: NDArray[np.bool],
-        n_rows: int,
-        n_cols: int,
+    vertex_indices: NDArray[np.int32],
+    indptr: NDArray[np.int32],
+    indices: NDArray[np.int32],
+    data: NDArray[np.bool],
+    n_rows: int,
+    n_cols: int,
 ) -> NDArray[np.int64]:
     avg_sizes = np.zeros(len(vertex_indices), dtype=np.float64)
 
@@ -68,4 +81,4 @@ def compute_avg_he_sizes(
 
         avg_sizes[idx] = total / (end - start)
 
-    return avg_sizes
+    return avg_sizes  # type: ignore

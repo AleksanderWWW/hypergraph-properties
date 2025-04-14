@@ -31,55 +31,29 @@ Output:
 ## CLI
 
 ```commandline
-$ hypergraph-properties ./data/tags-ask-ubuntu.txt --fmt empirical
+$ hypergraph-properties ./data/threads-ask-ubuntu.hgf --fmt hgf --html-report
 ```
 
 Output:
 
 ```text
-[hypergraph-properties] [info   ] running `hypergraph-properties` pipeline on file ./data/tags-ask-ubuntu.txt
-[hypergraph-properties] [info   ] expecting hypergraph to be in `empirical` format
-[hypergraph-properties] [warning] final report will not be saved - pass an out-file with --out <filename>
-[hypergraph-properties] [info   ] reading file ./data/tags-ask-ubuntu.txt
-[hypergraph-properties] [info   ] reading ./data/tags-ask-ubuntu.txt complete
-[hypergraph-properties] [info   ] node_corr(hg, log_degrees=True, log_avg_he_sizes=True) = 0.40539589371227935 (p=3.467592536283849e-120)
-[hypergraph-properties] [info   ] node_corr(hg, log_degrees=True, log_avg_he_sizes=False) = 0.39228486251988537 (p=5.364449174601271e-112)
-[hypergraph-properties] [info   ] node_corr(hg, log_degrees=False, log_avg_he_sizes=True) = 0.1718754643044873 (p=1.6272589030331839e-21)
-[hypergraph-properties] [info   ] node_corr(hg, log_degrees=False, log_avg_he_sizes=False) = 0.1811359746915786 (p=9.358505850238468e-24)
-```
-
-```commandline
-$ hypergraph-properties ./data/ABCD-h_seed_1235.txt --fmt synthetic
-```
-
-Output:
-
-```text
-[hypergraph-properties] [info   ] running `hypergraph-properties` pipeline on file ./data/ABCD-h_seed_1235.txt
-[hypergraph-properties] [info   ] expecting hypergraph to be in `synthetic` format
-[hypergraph-properties] [warning] final report will not be saved - pass an out-file with --out <filename>
-[hypergraph-properties] [info   ] reading file ./data/ABCD-h_seed_1235.txt
-[hypergraph-properties] [info   ] reading ./data/ABCD-h_seed_1235.txt complete
-[hypergraph-properties] [info   ] node_corr(hg, log_degrees=True, log_avg_he_sizes=True) = 0.042010524165326274 (p=2.6248171997912895e-40)
-[hypergraph-properties] [info   ] node_corr(hg, log_degrees=True, log_avg_he_sizes=False) = -0.0030696244883005866 (p=0.3317023506645107)
-[hypergraph-properties] [info   ] node_corr(hg, log_degrees=False, log_avg_he_sizes=True) = 0.03416366260811625 (p=3.2060974145117905e-27)
-[hypergraph-properties] [info   ] node_corr(hg, log_degrees=False, log_avg_he_sizes=False) = -0.0012296204410713741 (p=0.6973979034901194)
-```
-
-```commandline
-$ hypergraph-properties ./data/nba.hgf --fmt hgf
-```
-
-Output:
-
-```text
-[hypergraph-properties] [info   ] running `hypergraph-properties` pipeline on file ./data/nba.hgf
+[hypergraph-properties] [info   ] running `hypergraph-properties` pipeline on file ./data/threads-ask-ubuntu.hgf
 [hypergraph-properties] [info   ] expecting hypergraph to be in `hgf` format
-[hypergraph-properties] [warning] final report will not be saved - pass an out-file with --out <filename>
-[hypergraph-properties] [info   ] reading file ./data/nba.hgf
-[hypergraph-properties] [info   ] reading ./data/nba.hgf complete
-[hypergraph-properties] [info   ] node_corr(hg, log_degrees=True, log_avg_he_sizes=True) = -0.5583289591842195 (p=8.140371877425156e-180)
-[hypergraph-properties] [info   ] node_corr(hg, log_degrees=True, log_avg_he_sizes=False) = -0.5636493927828619 (p=5.833554811536166e-184)
-[hypergraph-properties] [info   ] node_corr(hg, log_degrees=False, log_avg_he_sizes=True) = -0.46808336480683643 (p=1.0120255480796103e-119)
-[hypergraph-properties] [info   ] node_corr(hg, log_degrees=False, log_avg_he_sizes=False) = -0.4667273354406076 (p=5.990069791878768e-119)
+[hypergraph-properties] [info   ] reading file ./data/threads-ask-ubuntu.hgf
+[hypergraph-properties] [info   ] reading ./data/threads-ask-ubuntu.hgf complete
+[hypergraph-properties] [info   ] node_corr(hg, log_degrees=False, log_avg_he_sizes=False) = 0.04039681603957261 (p=1.5835648248929718e-46)
+[hypergraph-properties] [info   ] node_corr(hg, log_degrees=True, log_avg_he_sizes=False) = 0.12526492858056895 (p=0.0)
+[hypergraph-properties] [info   ] node_corr(hg, log_degrees=False, log_avg_he_sizes=True) = 0.048067464711542135 (p=3.809320136716598e-65)
+[hypergraph-properties] [info   ] node_corr(hg, log_degrees=True, log_avg_he_sizes=True) = 0.1580846868633572 (p=0.0)
+[hypergraph-properties] [info   ] HTML report saved at threads-ask-ubuntu.html
+```
+
+### Interface spec
+
+```text
+Usage: hypergraph-properties [OPTIONS] FILENAME
+
+Options:
+  --fmt [empirical|synthetic|hgf]
+  --html-report
 ```

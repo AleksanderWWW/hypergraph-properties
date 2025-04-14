@@ -14,6 +14,9 @@ class HypergraphParsingError(Exception):
 
 
 class HypergraphReader(ABC):
+    def __init__(self) -> None:
+        self.hg_name: str | None = None
+
     @abstractmethod
     def parse_hg_data(self, hg_data: list[str]) -> Hypergraph: ...
 
@@ -21,6 +24,8 @@ class HypergraphReader(ABC):
         self, filepath: str | os.PathLike | Path, mode: str = "r"
     ) -> Hypergraph:
         logger.info(f"reading file {filepath}")
+
+        self.hg_name = Path(filepath).stem
 
         try:
             with open(filepath, mode) as fp:

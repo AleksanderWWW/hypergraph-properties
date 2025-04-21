@@ -10,6 +10,7 @@ from hypergraph_properties.hg_reader.template import HypergraphReader
 from hypergraph_properties.reporting.html import generate_html_report
 from hypergraph_properties.reporting.result_set import PearsonNodeCor, SpearmanNodeCor
 from hypergraph_properties.utils.logger import get_logger
+from hypergraph_properties.pipeline import run_pipeline
 
 logger = get_logger()
 
@@ -33,29 +34,14 @@ def main(filename: click.Path, fmt: str, html_report: bool) -> None:
         "hgf": HGFReader,
     }.get(fmt.lower(), HGFReader)()
 
-    hg = reader.read_graph(str(filename))
-
-    cors_p = []
-    cors_s = []
-
-    for log_avg_he_sizes in [False, True]:
-        for log_degrees in [False, True]:
-            corr_p = node_corr(
-                hg, log_degrees=log_degrees, log_avg_he_sizes=log_avg_he_sizes
-            )
-            corr_s = node_corr(
-                hg,
-                log_degrees=log_degrees,
-                log_avg_he_sizes=log_avg_he_sizes,
-                algorithm=CorAlgorithm.SPEARMAN,
-            )
-
-            cors_p.append(corr_p)
-            cors_s.append(corr_s)
-
-    p_cor = PearsonNodeCor(*cors_p)
-    s_cor = SpearmanNodeCor(*cors_s)
+    result = run_pipeline(reader, filename)
 
     if html_report:
-        saved_to = generate_html_report(str(filename), hg, fmt, p_cor, s_cor)
+        saved_to = generate_html_report(
+            str(filename),
+            result.hg,
+            fmt,
+            result.p_cor,
+            result.s_cor,
+        )
         logger.info(f"HTML report saved at {saved_to}")

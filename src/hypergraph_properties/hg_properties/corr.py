@@ -5,7 +5,6 @@ from dataclasses import dataclass
 from enum import Enum, auto
 
 import numpy as np
-from numba import njit  # type: ignore[import-untyped]
 from numpy.typing import NDArray
 from scipy import stats  # type: ignore[import-untyped]
 from scipy.sparse import csr_array
@@ -60,7 +59,7 @@ def node_corr(
         degrees = _cache[hg.name]["degrees"]
         avg_he_sizes = _cache[hg.name]["avg_he_sizes"]
     else:
-        degrees = compute_vertex_degrees(matrix.indptr, matrix.data, matrix.shape[0])
+        degrees = compute_vertex_degrees(matrix)
         avg_he_sizes = compute_avg_he_sizes(matrix)
         _cache[hg.name] = {
             "degrees": degrees,
@@ -84,14 +83,8 @@ def node_corr(
     )
 
 
-@njit
-def compute_vertex_degrees(
-    indptr: NDArray[np.int32], data: NDArray[np.bool], n_rows: int
-) -> NDArray[np.int64]:
-    result = np.zeros(n_rows, dtype=np.float64)
-    for i in range(n_rows):
-        result[i] = np.sum(data[indptr[i] : indptr[i + 1]])
-    return result  # type: ignore
+def compute_vertex_degrees(matrix: csr_array) -> NDArray[np.int64]:
+    return matrix.sum(axis=1)
 
 
 def compute_avg_he_sizes(

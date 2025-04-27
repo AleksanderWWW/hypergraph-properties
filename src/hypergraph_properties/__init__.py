@@ -1,16 +1,14 @@
 import click
 
-from hypergraph_properties.hg_properties.corr import CorAlgorithm, node_corr
 from hypergraph_properties.hg_reader.readers import (
     EmpiricalHGReader,
     HGFReader,
-    SyntheticHGReader, XGIReader,
+    SyntheticHGReader,
+    XGIReader,
 )
 from hypergraph_properties.hg_reader.template import HypergraphReader
-from hypergraph_properties.reporting.html import generate_html_report
-from hypergraph_properties.reporting.result_set import PearsonNodeCorrResultSet
 from hypergraph_properties.utils.logger import get_logger
-from hypergraph_properties.pipeline import run_pipeline
+from hypergraph_properties.hg_pipeline.pipeline import run_pipeline
 
 logger = get_logger()
 
@@ -20,13 +18,9 @@ logger = get_logger()
 @click.option(
     "--fmt", type=click.Choice(["empirical", "synthetic", "hgf", "xgi"], case_sensitive=False)
 )
-@click.option("--html-report", is_flag=True)
-def main(filename: click.Path, fmt: str, html_report: bool) -> None:
+def main(filename: click.Path, fmt: str) -> None:
     logger.info(f"running `hypergraph-properties` pipeline on file {filename}")
     logger.info(f"expecting hypergraph to be in `{fmt}` format")
-
-    if not any((html_report,)):  # TODO: other saving options e.g. json, csv
-        logger.warning("no saving option passed - results will not be persisted")
 
     reader: HypergraphReader = {  # type: ignore[abstract]
         "empirical": EmpiricalHGReader,
@@ -37,12 +31,4 @@ def main(filename: click.Path, fmt: str, html_report: bool) -> None:
 
     result = run_pipeline(reader, filename)
 
-    if html_report:
-        saved_to = generate_html_report(
-            str(filename),
-            result.hg,
-            fmt,
-            result.p_cor,
-            result.s_cor,
-        )
-        logger.info(f"HTML report saved at {saved_to}")
+    logger.info(result)

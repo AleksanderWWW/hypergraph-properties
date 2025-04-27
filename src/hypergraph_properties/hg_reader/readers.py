@@ -1,7 +1,12 @@
 from typing import Any
 
 import numpy as np
-from scipy.sparse import csr_array, dok_array, lil_array, coo_array  # type: ignore[import-untyped]
+from scipy.sparse import (  # type: ignore[import-untyped]
+    coo_array,
+    csr_array,
+    dok_array,
+    lil_array,
+)
 
 from hypergraph_properties.hg_model import Hypergraph
 from hypergraph_properties.hg_reader.template import HypergraphLineReader, JSONHGReader

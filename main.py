@@ -1,10 +1,15 @@
-import time
 import os
+import time
 from pathlib import Path
 
 import pandas as pd
 
-from hypergraph_properties import EmpiricalHGReader, SyntheticHGReader, HGFReader, XGIReader
+from hypergraph_properties import (
+    EmpiricalHGReader,
+    HGFReader,
+    SyntheticHGReader,
+    XGIReader,
+)
 from hypergraph_properties.hg_pipeline.pipeline import run_pipeline
 from hypergraph_properties.utils.git_info import get_current_commit_sha
 
@@ -44,7 +49,6 @@ def main() -> None:
         result = run_pipeline(XGIReader(), path)
 
         data.append(result.to_dict())
-
 
     filename = f"pipeline_result_{int(time.time())}_{get_current_commit_sha()}.csv"
     pd.DataFrame(data).set_index("name").to_csv(filename)

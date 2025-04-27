@@ -1,9 +1,4 @@
-__all__ = [
-    "pearson_node_corr",
-    "spearman_node_corr",
-    "CorrResult",
-    "purge_cache"
-]
+__all__ = ["pearson_node_corr", "spearman_node_corr", "CorrResult", "purge_cache"]
 
 
 from dataclasses import dataclass

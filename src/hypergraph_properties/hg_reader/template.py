@@ -20,9 +20,8 @@ class HypergraphReader:
         self.hg_name: str | None = None
 
     def read_graph(
-            self, filepath: str | os.PathLike | Path, mode: str = "r"
-    ) -> Hypergraph:
-        ...
+        self, filepath: str | os.PathLike | Path, mode: str = "r"
+    ) -> Hypergraph: ...
 
 
 class HypergraphLineReader(ABC, HypergraphReader):

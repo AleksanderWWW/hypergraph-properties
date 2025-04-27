@@ -1,3 +1,5 @@
+import json
+
 import click
 
 from hypergraph_properties.hg_pipeline.pipeline import run_pipeline
@@ -32,4 +34,4 @@ def main(filename: click.Path, fmt: str) -> None:
 
     result = run_pipeline(reader, filename)
 
-    logger.info(result)
+    logger.info(json.dumps(result.to_dict(), indent=4))

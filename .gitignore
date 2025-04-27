@@ -174,3 +174,7 @@ cython_debug/
 .pypirc
 
 .idea/
+
+*.html
+*.csv
+scratch.py

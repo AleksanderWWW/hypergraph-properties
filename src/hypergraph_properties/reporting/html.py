@@ -7,15 +7,16 @@ from dominate.util import raw  # type: ignore[import-untyped]
 from pandas.io.formats.style import Styler
 
 from hypergraph_properties.hg_model import Hypergraph
-from hypergraph_properties.reporting.result_set import PearsonNodeCor, SpearmanNodeCor
+from hypergraph_properties.reporting.result_set import PearsonNodeCorrResultSet
+from scipy.stats._stats_py import SignificanceResult as SpearmanRResult
 
 
 def generate_html_report(
     filepath: str,
     hg: Hypergraph,
     fmt: str,
-    p_cor: PearsonNodeCor,
-    s_cor: SpearmanNodeCor,
+    p_cor: PearsonNodeCorrResultSet,
+    s_cor: SpearmanRResult,
 ) -> Path:
     title = f"Report for {hg.name}"
 
@@ -25,7 +26,7 @@ def generate_html_report(
 
     p_cor_table = _create_cor_table(p_cor)
 
-    s_cor_table = _create_cor_table(s_cor)
+    # s_cor_table = _create_cor_table(s_cor)
 
     with dominate.document(title=title) as doc:
         tags.h1(title)
@@ -38,9 +39,9 @@ def generate_html_report(
         tags.p("The following table provides results for Pearson NodeCor")
         raw(add_styles(p_cor_table).to_html())
 
-        tags.h2("Spearman corelation coefficients")
-        tags.p("The following table provides results for Spearman NodeCor")
-        raw(add_styles(s_cor_table).to_html())
+        # tags.h2("Spearman corelation coefficients")
+        # tags.p("The following table provides results for Spearman NodeCor")
+        # raw(add_styles(s_cor_table).to_html())
 
     with open(save_path, "w") as fp:
         fp.write(doc.render())
@@ -55,7 +56,7 @@ def _create_metadata_table(hg: Hypergraph, filepath: str, fmt: str) -> pd.DataFr
     )
 
 
-def _create_cor_table(cor: PearsonNodeCor | SpearmanNodeCor) -> pd.DataFrame:
+def _create_cor_table(cor: PearsonNodeCorrResultSet) -> pd.DataFrame:
     return pd.DataFrame(
         data={
             "avg_he_size": [

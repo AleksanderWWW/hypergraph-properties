@@ -4,11 +4,11 @@ from hypergraph_properties.hg_properties.corr import CorAlgorithm, node_corr
 from hypergraph_properties.hg_reader.readers import (
     EmpiricalHGReader,
     HGFReader,
-    SyntheticHGReader,
+    SyntheticHGReader, XGIReader,
 )
 from hypergraph_properties.hg_reader.template import HypergraphReader
 from hypergraph_properties.reporting.html import generate_html_report
-from hypergraph_properties.reporting.result_set import PearsonNodeCor, SpearmanNodeCor
+from hypergraph_properties.reporting.result_set import PearsonNodeCorrResultSet
 from hypergraph_properties.utils.logger import get_logger
 from hypergraph_properties.pipeline import run_pipeline
 
@@ -18,7 +18,7 @@ logger = get_logger()
 @click.command()
 @click.argument("filename", type=click.Path(exists=True))
 @click.option(
-    "--fmt", type=click.Choice(["empirical", "synthetic", "hgf"], case_sensitive=False)
+    "--fmt", type=click.Choice(["empirical", "synthetic", "hgf", "xgi"], case_sensitive=False)
 )
 @click.option("--html-report", is_flag=True)
 def main(filename: click.Path, fmt: str, html_report: bool) -> None:
@@ -32,6 +32,7 @@ def main(filename: click.Path, fmt: str, html_report: bool) -> None:
         "empirical": EmpiricalHGReader,
         "synthetic": SyntheticHGReader,
         "hgf": HGFReader,
+        "xgi": XGIReader,
     }.get(fmt.lower(), HGFReader)()
 
     result = run_pipeline(reader, filename)

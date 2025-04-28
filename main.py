@@ -1,5 +1,6 @@
 import os
 import time
+from multiprocessing.util import get_logger
 from pathlib import Path
 
 import pandas as pd
@@ -12,6 +13,9 @@ from hypergraph_properties import (
 )
 from hypergraph_properties.hg_pipeline.pipeline import run_pipeline
 from hypergraph_properties.utils.git_info import get_current_commit_sha
+
+
+logger = get_logger()
 
 
 def main() -> None:
@@ -55,4 +59,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    start = time.perf_counter()
     main()
+    logger.info(f"Finished in {time.perf_counter() - start} seconds")

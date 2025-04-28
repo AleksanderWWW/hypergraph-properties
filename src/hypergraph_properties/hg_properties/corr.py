@@ -52,7 +52,8 @@ def node_corr(
     log_avg_he_sizes: bool = False,
     algorithm: CorAlgorithm = CorAlgorithm.PEARSON,
 ) -> CorrResult:
-    matrix = hg.matrix
+    matrix = with_removed_singleton_vertices(matrix=hg.matrix)
+
     global _cache
 
     if hg.name in _cache:
@@ -81,6 +82,11 @@ def node_corr(
         corr.pvalue,
         name=f"{algorithm.name}_{log_degrees}_{log_avg_he_sizes}",
     )
+
+
+def with_removed_singleton_vertices(matrix: csr_array) -> csr_array:
+    num_nonzeros = np.diff(matrix.indptr)
+    return matrix[num_nonzeros != 0]
 
 
 def compute_vertex_degrees(matrix: csr_array) -> NDArray[np.int64]:

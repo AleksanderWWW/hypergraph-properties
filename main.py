@@ -1,11 +1,21 @@
-import datetime
 import os
+import time
+from multiprocessing.util import get_logger
 from pathlib import Path
 
 import pandas as pd
 
-from hypergraph_properties import EmpiricalHGReader, SyntheticHGReader, HGFReader
-from hypergraph_properties.pipeline import run_pipeline
+from hypergraph_properties import (
+    EmpiricalHGReader,
+    HGFReader,
+    SyntheticHGReader,
+    XGIReader,
+)
+from hypergraph_properties.hg_pipeline.pipeline import run_pipeline
+from hypergraph_properties.utils.git_info import get_current_commit_sha
+
+
+logger = get_logger()
 
 
 def main() -> None:
@@ -36,9 +46,19 @@ def main() -> None:
 
         data.append(result.to_dict())
 
+    for file in os.listdir(Path("data/xgi")):
+        path = Path("data/xgi") / file
+        if not path.is_file():
+            continue
+        result = run_pipeline(XGIReader(), path)
 
-    pd.DataFrame(data).to_csv(f"pipeline_result_{datetime.datetime.now()}.csv")
+        data.append(result.to_dict())
+
+    filename = f"pipeline_result_{int(time.time())}_{get_current_commit_sha()}.csv"
+    pd.DataFrame(data).set_index("name").to_csv(filename)
 
 
 if __name__ == "__main__":
+    start = time.perf_counter()
     main()
+    logger.info(f"Finished in {time.perf_counter() - start} seconds")

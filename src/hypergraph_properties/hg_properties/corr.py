@@ -1,11 +1,13 @@
+__all__ = ["pearson_node_corr", "spearman_node_corr", "CorrResult", "purge_cache"]
+
+
+from dataclasses import dataclass
 from enum import Enum, auto
 
 import numpy as np
-from numba import njit  # type: ignore[import-untyped]
 from numpy.typing import NDArray
 from scipy import stats  # type: ignore[import-untyped]
-from scipy.stats._result_classes import PearsonRResult  # type: ignore[import-untyped]
-from scipy.stats._stats_py import SignificanceResult as SpearmanRResult  # type: ignore[import-untyped]
+from scipy.sparse import csr_array
 
 from hypergraph_properties.hg_model import Hypergraph
 
@@ -15,70 +17,94 @@ class CorAlgorithm(Enum):
     SPEARMAN = auto()
 
 
+@dataclass
+class CorrResult:
+    statistic: float
+    pvalue: float
+    name: str
+
+    def to_dict(self) -> dict:
+        return {
+            f"{self.name}_statistic": self.statistic,
+            f"{self.name}_pvalue": self.pvalue,
+        }
+
+
+def pearson_node_corr(hg, log_degrees, log_avg_he_sizes) -> CorrResult:
+    return node_corr(hg, log_degrees, log_avg_he_sizes)
+
+
+def spearman_node_corr(hg) -> CorrResult:
+    return node_corr(hg, False, False, algorithm=CorAlgorithm.SPEARMAN)
+
+
+_cache = {}
+
+
+def purge_cache(name: str) -> None:
+    global _cache
+    del _cache[name]
+
+
 def node_corr(
     hg: Hypergraph,
     log_degrees: bool = False,
     log_avg_he_sizes: bool = False,
     algorithm: CorAlgorithm = CorAlgorithm.PEARSON,
-) -> PearsonRResult | SpearmanRResult:
-    vertex_indices = np.array([v - 1 for v in hg.vertex_meta], dtype=np.int32)
-    matrix = hg.matrix
+) -> CorrResult:
+    matrix = with_removed_singleton_vertices(matrix=hg.matrix)
 
-    degrees = row_sums(matrix.indptr, matrix.data, matrix.shape[0])[vertex_indices]
+    global _cache
+
+    if hg.name in _cache:
+        degrees = _cache[hg.name]["degrees"]
+        avg_he_sizes = _cache[hg.name]["avg_he_sizes"]
+    else:
+        degrees = compute_vertex_degrees(matrix)
+        avg_he_sizes = compute_avg_he_sizes(matrix)
+        _cache[hg.name] = {
+            "degrees": degrees,
+            "avg_he_sizes": avg_he_sizes,
+        }
+
     if log_degrees:
         degrees = np.log(degrees + 1)
-
-    avg_he_sizes = compute_avg_he_sizes(
-        vertex_indices, matrix.indptr, matrix.indices, matrix.data, *matrix.shape
-    )
 
     if log_avg_he_sizes:
         avg_he_sizes = np.log(avg_he_sizes + 1)
 
-    if algorithm == CorAlgorithm.PEARSON:
-        return stats.pearsonr(degrees, avg_he_sizes)
-    return stats.spearmanr(degrees, avg_he_sizes)
+    func = stats.pearsonr if algorithm == CorAlgorithm.PEARSON else stats.spearmanr
+
+    corr = func(degrees, avg_he_sizes)
+
+    return CorrResult(
+        corr.statistic,
+        corr.pvalue,
+        name=f"{algorithm.name}_{log_degrees}_{log_avg_he_sizes}",
+    )
 
 
-@njit
-def row_sums(
-    indptr: NDArray[np.int32], data: NDArray[np.bool], n_rows: int
-) -> NDArray[np.int64]:
-    result = np.zeros(n_rows, dtype=np.float64)
-    for i in range(n_rows):
-        result[i] = np.sum(data[indptr[i] : indptr[i + 1]])
-    return result  # type: ignore
+def with_removed_singleton_vertices(matrix: csr_array) -> csr_array:
+    num_nonzeros = np.diff(matrix.indptr)
+    return matrix[num_nonzeros != 0]
 
 
-@njit
+def compute_vertex_degrees(matrix: csr_array) -> NDArray[np.int64]:
+    return matrix.sum(axis=1)
+
+
 def compute_avg_he_sizes(
-    vertex_indices: NDArray[np.int32],
-    indptr: NDArray[np.int32],
-    indices: NDArray[np.int32],
-    data: NDArray[np.bool],
-    n_rows: int,
-    n_cols: int,
+    matrix: csr_array,
 ) -> NDArray[np.int64]:
-    avg_sizes = np.zeros(len(vertex_indices), dtype=np.float64)
+    he_sizes = np.asarray(matrix.sum(axis=0))
 
-    col_degrees = np.zeros(n_cols, dtype=np.float64)
-    for row in range(n_rows):
-        for j in range(indptr[row], indptr[row + 1]):
-            col = indices[j]
-            col_degrees[col] += data[j]
+    n_vertices = matrix.shape[0]
+    avg_deg = np.zeros(n_vertices, dtype=np.float64)
 
-    for idx, v in enumerate(vertex_indices):
-        start = indptr[v]
-        end = indptr[v + np.int32(1)]
-        if start == end:
-            avg_sizes[idx] = 0.0
-            continue
+    for i in range(n_vertices):
+        start, end = matrix.indptr[i], matrix.indptr[i + 1]
+        hyper_edges = matrix.indices[start:end]
 
-        connected_cols = indices[start:end]
-        total = 0.0
-        for col in connected_cols:
-            total += col_degrees[col]
+        avg_deg[i] = 0.0 if len(hyper_edges) == 0 else he_sizes[hyper_edges].mean()
 
-        avg_sizes[idx] = total / (end - start)
-
-    return avg_sizes  # type: ignore
+    return avg_deg

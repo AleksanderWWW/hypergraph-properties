@@ -37,7 +37,9 @@ class CorrResult:
         }
 
 
-def pearson_node_corr(hg: Hypergraph, log_degrees: bool, log_avg_he_sizes: bool) -> CorrResult:
+def pearson_node_corr(
+    hg: Hypergraph, log_degrees: bool, log_avg_he_sizes: bool
+) -> CorrResult:
     return corr(hg, log_degrees=log_degrees, log_avg_col_sizes=log_avg_he_sizes)
 
 
@@ -45,9 +47,16 @@ def spearman_node_corr(hg: Hypergraph) -> CorrResult:
     return corr(hg, False, False, algorithm=CorAlgorithm.SPEARMAN)
 
 
-def pearson_edge_corr(hg: Hypergraph, log_degrees: bool, log_avg_node_sizes: bool) -> CorrResult:
+def pearson_edge_corr(
+    hg: Hypergraph, log_degrees: bool, log_avg_node_sizes: bool
+) -> CorrResult:
     hg.matrix = hg.matrix.transpose().tocsr()
-    return corr(hg, log_degrees=log_degrees, log_avg_col_sizes=log_avg_node_sizes, centric="edge")
+    return corr(
+        hg,
+        log_degrees=log_degrees,
+        log_avg_col_sizes=log_avg_node_sizes,
+        centric="edge",
+    )
 
 
 def spearman_edge_corr(hg: Hypergraph) -> CorrResult:

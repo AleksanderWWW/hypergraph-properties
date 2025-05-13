@@ -2,21 +2,26 @@ import numpy as np
 import pytest
 from scipy.sparse import csr_array
 
-from hypergraph_properties.hg_properties.corr import compute_row_sums, compute_avg_column_sizes, \
-    with_empty_rows_removed
+from hypergraph_properties.hg_properties.corr import (
+    compute_avg_column_sizes,
+    compute_row_sums,
+    with_empty_rows_removed,
+)
 
 
 @pytest.fixture(scope="session")
 def matrix() -> csr_array:
-    return csr_array(np.array(
-        [
-            [1, 1, 0, 1],  # (2 + 3 + 4) / 3
-            [1, 0, 1, 0],  # (2 + 1) / 2
-            [0, 0, 0, 1],  # 4 / 1
-            [0, 1, 0, 1],  # (3 + 4) / 2
-            [0, 1, 0, 1],  # (3 + 4) / 2
-         ]
-    ))
+    return csr_array(
+        np.array(
+            [
+                [1, 1, 0, 1],  # (2 + 3 + 4) / 3
+                [1, 0, 1, 0],  # (2 + 1) / 2
+                [0, 0, 0, 1],  # 4 / 1
+                [0, 1, 0, 1],  # (3 + 4) / 2
+                [0, 1, 0, 1],  # (3 + 4) / 2
+            ]
+        )
+    )
 
 
 def test_compute_vertex_degrees(matrix) -> None:
@@ -26,13 +31,18 @@ def test_compute_vertex_degrees(matrix) -> None:
 
 def test_compute_avg_he_sizes(matrix) -> None:
     avg_he_sizes = compute_avg_column_sizes(matrix)
-    assert np.all(avg_he_sizes == np.array([
-        (2 + 3 + 4) / 3,
-        (2 + 1) / 2,
-        4 / 1,
-        (3 + 4) / 2,
-        (3 + 4) / 2,
-    ]))
+    assert np.all(
+        avg_he_sizes
+        == np.array(
+            [
+                (2 + 3 + 4) / 3,
+                (2 + 1) / 2,
+                4 / 1,
+                (3 + 4) / 2,
+                (3 + 4) / 2,
+            ]
+        )
+    )
 
 
 def test_removing_singleton_vertices(matrix) -> None:

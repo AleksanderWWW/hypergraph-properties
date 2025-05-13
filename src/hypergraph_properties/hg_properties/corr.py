@@ -1,4 +1,11 @@
-__all__ = ["pearson_node_corr", "spearman_node_corr", "CorrResult", "purge_cache"]
+__all__ = [
+    "pearson_node_corr",
+    "spearman_node_corr",
+    "pearson_edge_corr",
+    "spearman_edge_corr",
+    "CorrResult",
+    "purge_cache",
+]
 
 
 from dataclasses import dataclass
@@ -30,12 +37,31 @@ class CorrResult:
         }
 
 
-def pearson_node_corr(hg, log_degrees, log_avg_he_sizes) -> CorrResult:
-    return node_corr(hg, log_degrees, log_avg_he_sizes)
+def pearson_node_corr(
+    hg: Hypergraph, log_degrees: bool, log_avg_he_sizes: bool
+) -> CorrResult:
+    return corr(hg, log_degrees=log_degrees, log_avg_col_sizes=log_avg_he_sizes)
 
 
-def spearman_node_corr(hg) -> CorrResult:
-    return node_corr(hg, False, False, algorithm=CorAlgorithm.SPEARMAN)
+def spearman_node_corr(hg: Hypergraph) -> CorrResult:
+    return corr(hg, False, False, algorithm=CorAlgorithm.SPEARMAN)
+
+
+def pearson_edge_corr(
+    hg: Hypergraph, log_degrees: bool, log_avg_node_sizes: bool
+) -> CorrResult:
+    hg.matrix = hg.matrix.transpose().tocsr()
+    return corr(
+        hg,
+        log_degrees=log_degrees,
+        log_avg_col_sizes=log_avg_node_sizes,
+        centric="edge",
+    )
+
+
+def spearman_edge_corr(hg: Hypergraph) -> CorrResult:
+    hg.matrix = hg.matrix.transpose().tocsr()
+    return corr(hg, False, False, algorithm=CorAlgorithm.SPEARMAN, centric="edge")
 
 
 _cache = {}
@@ -46,54 +72,55 @@ def purge_cache(name: str) -> None:
     del _cache[name]
 
 
-def node_corr(
+def corr(
     hg: Hypergraph,
     log_degrees: bool = False,
-    log_avg_he_sizes: bool = False,
+    log_avg_col_sizes: bool = False,
     algorithm: CorAlgorithm = CorAlgorithm.PEARSON,
+    centric: str = "node",
 ) -> CorrResult:
-    matrix = with_removed_singleton_vertices(matrix=hg.matrix)
+    matrix = with_empty_rows_removed(matrix=hg.matrix)
 
     global _cache
 
     if hg.name in _cache:
-        degrees = _cache[hg.name]["degrees"]
-        avg_he_sizes = _cache[hg.name]["avg_he_sizes"]
+        degrees = _cache[hg.name]["row_sums"]
+        avg_col_sizes = _cache[hg.name]["avg_column_sizes"]
     else:
-        degrees = compute_vertex_degrees(matrix)
-        avg_he_sizes = compute_avg_he_sizes(matrix)
+        degrees = compute_row_sums(matrix)
+        avg_col_sizes = compute_avg_column_sizes(matrix)
         _cache[hg.name] = {
-            "degrees": degrees,
-            "avg_he_sizes": avg_he_sizes,
+            "row_sums": degrees,
+            "avg_column_sizes": avg_col_sizes,
         }
 
     if log_degrees:
         degrees = np.log(degrees + 1)
 
-    if log_avg_he_sizes:
-        avg_he_sizes = np.log(avg_he_sizes + 1)
+    if log_avg_col_sizes:
+        avg_col_sizes = np.log(avg_col_sizes + 1)
 
     func = stats.pearsonr if algorithm == CorAlgorithm.PEARSON else stats.spearmanr
 
-    corr = func(degrees, avg_he_sizes)
+    result = func(degrees, avg_col_sizes)
 
     return CorrResult(
-        corr.statistic,
-        corr.pvalue,
-        name=f"{algorithm.name}_{log_degrees}_{log_avg_he_sizes}",
+        result.statistic,
+        result.pvalue,
+        name=f"[{centric}]{algorithm.name}_{log_degrees}_{log_avg_col_sizes}",
     )
 
 
-def with_removed_singleton_vertices(matrix: csr_array) -> csr_array:
+def with_empty_rows_removed(matrix: csr_array) -> csr_array:
     num_nonzeros = np.diff(matrix.indptr)
     return matrix[num_nonzeros != 0]
 
 
-def compute_vertex_degrees(matrix: csr_array) -> NDArray[np.int64]:
+def compute_row_sums(matrix: csr_array) -> NDArray[np.int64]:
     return matrix.sum(axis=1)
 
 
-def compute_avg_he_sizes(
+def compute_avg_column_sizes(
     matrix: csr_array,
 ) -> NDArray[np.int64]:
     he_sizes = np.asarray(matrix.sum(axis=0))

@@ -14,7 +14,6 @@ from hypergraph_properties import (
 from hypergraph_properties.hg_pipeline.pipeline import run_pipeline
 from hypergraph_properties.utils.git_info import get_current_commit_sha
 
-
 logger = get_logger()
 
 

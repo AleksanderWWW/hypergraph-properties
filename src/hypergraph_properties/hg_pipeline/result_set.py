@@ -48,6 +48,7 @@ class HGPipelineResult:
     pearson_edge_corr: PearsonEdgeCorrResult
     spearman_node_corr: CorrResult
     spearman_edge_corr: CorrResult
+    assortativity: CorrResult
     hg: Hypergraph
 
     def to_dict(self) -> dict[str, float | str]:
@@ -57,6 +58,7 @@ class HGPipelineResult:
             **self.spearman_node_corr.to_dict(),
             **self.pearson_edge_corr.to_dict(),
             **self.spearman_edge_corr.to_dict(),
+            **self.assortativity.to_dict(),
             "n_vertices": self.hg.matrix.shape[0],
             "n_edges": self.hg.matrix.shape[1],
         }

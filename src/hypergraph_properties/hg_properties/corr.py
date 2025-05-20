@@ -9,7 +9,6 @@ __all__ = [
 
 
 from dataclasses import dataclass
-from enum import Enum, auto
 
 import numpy as np
 from numpy.typing import NDArray
@@ -17,11 +16,10 @@ from scipy import stats  # type: ignore[import-untyped]
 from scipy.sparse import csr_array
 
 from hypergraph_properties.hg_model import Hypergraph
-
-
-class CorAlgorithm(Enum):
-    PEARSON = auto()
-    SPEARMAN = auto()
+from hypergraph_properties.hg_properties.utils import (
+    with_empty_rows_removed,
+    CorAlgorithm,
+)
 
 
 @dataclass
@@ -109,11 +107,6 @@ def corr(
         result.pvalue,
         name=f"[{centric}]{algorithm.name}_{log_degrees}_{log_avg_col_sizes}",
     )
-
-
-def with_empty_rows_removed(matrix: csr_array) -> csr_array:
-    num_nonzeros = np.diff(matrix.indptr)
-    return matrix[num_nonzeros != 0]
 
 
 def compute_row_sums(matrix: csr_array) -> NDArray[np.int64]:

@@ -20,6 +20,7 @@ from hypergraph_properties.hg_properties.corr import (
     spearman_edge_corr,
     spearman_node_corr,
 )
+from hypergraph_properties.hg_properties.assortativity_corr import corr_assort
 from hypergraph_properties.hg_reader import HypergraphReader
 
 
@@ -49,7 +50,7 @@ def run_pipeline(
                 pbar.update(1)
                 cors_node_p.append(corr_p)
 
-            s_cor = spearman_node_corr(hg)
+            s_cor_node = spearman_node_corr(hg)
             pbar.update(1)
 
         # Edge-centric correlations
@@ -59,8 +60,11 @@ def run_pipeline(
                 pbar.update(1)
                 cors_edge_p.append(corr_p)
 
-            s_cor = spearman_node_corr(hg)
+            s_cor_edge = spearman_edge_corr(hg)
             pbar.update(1)
+
+        a_cor = corr_assort(hg)
+        pbar.update(1)
 
     p_node_cor = PearsonNodeCorrResult(*cors_node_p)
     p_edge_cor = PearsonEdgeCorrResult(*cors_edge_p)
@@ -68,7 +72,8 @@ def run_pipeline(
     return HGPipelineResult(
         pearson_node_corr=p_node_cor,
         pearson_edge_corr=p_edge_cor,
-        spearman_node_corr=s_cor,
-        spearman_edge_corr=s_cor,
+        spearman_node_corr=s_cor_node,
+        spearman_edge_corr=s_cor_edge,
+        assortativity=a_cor,
         hg=hg,
     )

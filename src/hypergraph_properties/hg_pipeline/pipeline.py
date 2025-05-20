@@ -20,6 +20,7 @@ from hypergraph_properties.hg_properties.corr import (
     spearman_edge_corr,
     spearman_node_corr,
 )
+from hypergraph_properties.hg_properties.assortativity_corr import corr_assort
 from hypergraph_properties.hg_reader import HypergraphReader
 
 
@@ -62,6 +63,9 @@ def run_pipeline(
             s_cor = spearman_node_corr(hg)
             pbar.update(1)
 
+        a_cor = corr_assort(hg)
+        pbar.update(1)
+
     p_node_cor = PearsonNodeCorrResult(*cors_node_p)
     p_edge_cor = PearsonEdgeCorrResult(*cors_edge_p)
 
@@ -70,5 +74,6 @@ def run_pipeline(
         pearson_edge_corr=p_edge_cor,
         spearman_node_corr=s_cor,
         spearman_edge_corr=s_cor,
+        assortativity=a_cor,
         hg=hg,
     )

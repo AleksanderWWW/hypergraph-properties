@@ -16,7 +16,10 @@ from scipy import stats  # type: ignore[import-untyped]
 from scipy.sparse import csr_array
 
 from hypergraph_properties.hg_model import Hypergraph
-from hypergraph_properties.hg_properties.utils import with_empty_rows_removed, CorAlgorithm
+from hypergraph_properties.hg_properties.utils import (
+    with_empty_rows_removed,
+    CorAlgorithm,
+)
 
 
 @dataclass

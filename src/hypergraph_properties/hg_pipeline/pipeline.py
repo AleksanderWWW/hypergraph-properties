@@ -50,7 +50,7 @@ def run_pipeline(
                 pbar.update(1)
                 cors_node_p.append(corr_p)
 
-            s_cor = spearman_node_corr(hg)
+            s_cor_node = spearman_node_corr(hg)
             pbar.update(1)
 
         # Edge-centric correlations
@@ -60,7 +60,7 @@ def run_pipeline(
                 pbar.update(1)
                 cors_edge_p.append(corr_p)
 
-            s_cor = spearman_node_corr(hg)
+            s_cor_edge = spearman_edge_corr(hg)
             pbar.update(1)
 
         a_cor = corr_assort(hg)
@@ -72,8 +72,8 @@ def run_pipeline(
     return HGPipelineResult(
         pearson_node_corr=p_node_cor,
         pearson_edge_corr=p_edge_cor,
-        spearman_node_corr=s_cor,
-        spearman_edge_corr=s_cor,
+        spearman_node_corr=s_cor_node,
+        spearman_edge_corr=s_cor_edge,
         assortativity=a_cor,
         hg=hg,
     )

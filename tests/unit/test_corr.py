@@ -2,11 +2,13 @@ import numpy as np
 import pytest
 from scipy.sparse import csr_array
 
+from hypergraph_properties.hg_model import Hypergraph
+from hypergraph_properties.hg_properties.assortativity_corr import corr_assort
 from hypergraph_properties.hg_properties.corr import (
     compute_avg_column_sizes,
     compute_row_sums,
-    with_empty_rows_removed,
 )
+from hypergraph_properties.hg_properties.utils import with_empty_rows_removed
 
 
 @pytest.fixture(scope="session")
@@ -57,3 +59,18 @@ def test_removing_singleton_vertices(matrix) -> None:
     assert not np.any(matrix_no_singleton.sum(axis=1) == 0)
 
     assert matrix_no_singleton.shape[0] == matrix_with_singleton.shape[0] - 1
+
+
+def test_assortativity(matrix, mocker) -> None:
+    mock_pearsonr = mocker.patch(
+        "hypergraph_properties.hg_properties.assortativity_corr.stats.pearsonr"
+    )
+
+    corr_assort(Hypergraph(matrix=matrix, name="test", vertex_meta=[0, 1]))
+
+    assert mock_pearsonr.call_count == 1
+
+    x, y = mock_pearsonr.call_args[0]
+
+    assert np.array_equal(x, np.array([3, 3, 3, 2, 2, 1, 2, 2, 2, 2]))
+    assert np.array_equal(y, np.array([2, 3, 4, 2, 1, 4, 3, 4, 3, 4]))

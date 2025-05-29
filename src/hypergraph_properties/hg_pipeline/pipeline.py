@@ -19,6 +19,8 @@ from hypergraph_properties.hg_properties.corr import (
     purge_cache,
     spearman_edge_corr,
     spearman_node_corr,
+    kendalltau_node_corr,
+    kendalltau_edge_corr,
 )
 from hypergraph_properties.hg_properties.assortativity_corr import corr_assort
 from hypergraph_properties.hg_reader import HypergraphReader
@@ -42,7 +44,7 @@ def run_pipeline(
 
     combinations = list(itertools.product([False, True], repeat=2))
 
-    with tqdm(total=10, desc="calculating correlations") as pbar:
+    with tqdm(total=14, desc="calculating correlations") as pbar:
         # Node-centric correlations
         with with_cache_purged(hg.name):
             for log_avg_he_sizes, log_degrees in combinations:
@@ -51,6 +53,9 @@ def run_pipeline(
                 cors_node_p.append(corr_p)
 
             s_cor_node = spearman_node_corr(hg)
+            pbar.update(1)
+
+            k_cor_node = kendalltau_node_corr(hg)
             pbar.update(1)
 
         # Edge-centric correlations
@@ -63,8 +68,12 @@ def run_pipeline(
             s_cor_edge = spearman_edge_corr(hg)
             pbar.update(1)
 
+            k_cor_edge = kendalltau_edge_corr(hg)
+            pbar.update(1)
+
+
         a_cor = corr_assort(hg)
-        pbar.update(1)
+        pbar.update(3)
 
     p_node_cor = PearsonNodeCorrResult(*cors_node_p)
     p_edge_cor = PearsonEdgeCorrResult(*cors_edge_p)
@@ -74,6 +83,10 @@ def run_pipeline(
         pearson_edge_corr=p_edge_cor,
         spearman_node_corr=s_cor_node,
         spearman_edge_corr=s_cor_edge,
-        assortativity=a_cor,
+        kendalltau_node_corr=k_cor_node,
+        kendalltau_edge_corr=k_cor_edge,
+        pearson_assortativity=a_cor[0],
+        spearman_assortativity=a_cor[1],
+        kendalltau_assortativity=a_cor[2],
         hg=hg,
     )

@@ -178,3 +178,5 @@ cython_debug/
 *.html
 *.csv
 scratch.py
+*zip
+temp

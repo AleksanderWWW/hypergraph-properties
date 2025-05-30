@@ -3,6 +3,8 @@ __all__ = [
     "spearman_node_corr",
     "pearson_edge_corr",
     "spearman_edge_corr",
+    "kendalltau_node_corr",
+    "kendalltau_edge_corr",
     "CorrResult",
     "purge_cache",
 ]
@@ -12,13 +14,13 @@ from dataclasses import dataclass
 
 import numpy as np
 from numpy.typing import NDArray
-from scipy import stats  # type: ignore[import-untyped]
 from scipy.sparse import csr_array
 
 from hypergraph_properties.hg_model import Hypergraph
 from hypergraph_properties.hg_properties.utils import (
     with_empty_rows_removed,
     CorAlgorithm,
+    ALGOS,
 )
 
 
@@ -45,6 +47,10 @@ def spearman_node_corr(hg: Hypergraph) -> CorrResult:
     return corr(hg, False, False, algorithm=CorAlgorithm.SPEARMAN)
 
 
+def kendalltau_node_corr(hg: Hypergraph) -> CorrResult:
+    return corr(hg, False, False, algorithm=CorAlgorithm.KENDALLTAU)
+
+
 def pearson_edge_corr(
     hg: Hypergraph, log_degrees: bool, log_avg_node_sizes: bool
 ) -> CorrResult:
@@ -62,6 +68,11 @@ def spearman_edge_corr(hg: Hypergraph) -> CorrResult:
     return corr(hg, False, False, algorithm=CorAlgorithm.SPEARMAN, centric="edge")
 
 
+def kendalltau_edge_corr(hg: Hypergraph) -> CorrResult:
+    hg.matrix = hg.matrix.transpose().tocsr()
+    return corr(hg, False, False, algorithm=CorAlgorithm.KENDALLTAU)
+
+
 _cache = {}
 
 
@@ -77,6 +88,9 @@ def corr(
     algorithm: CorAlgorithm = CorAlgorithm.PEARSON,
     centric: str = "node",
 ) -> CorrResult:
+    if algorithm not in ALGOS:
+        raise ValueError(f"'{algorithm}' is not a valid algorithm.")
+
     matrix = with_empty_rows_removed(matrix=hg.matrix)
 
     global _cache
@@ -93,12 +107,12 @@ def corr(
         }
 
     if log_degrees:
-        degrees = np.log(degrees + 1)
+        degrees = np.log(degrees)
 
     if log_avg_col_sizes:
-        avg_col_sizes = np.log(avg_col_sizes + 1)
+        avg_col_sizes = np.log(avg_col_sizes)
 
-    func = stats.pearsonr if algorithm == CorAlgorithm.PEARSON else stats.spearmanr
+    func = ALGOS[algorithm]
 
     result = func(degrees, avg_col_sizes)
 

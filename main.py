@@ -69,8 +69,8 @@ def main() -> None:
 
     now = int(time.time())
 
-    p_result_filename = (
-        f"pipeline_result_{now}_{get_current_commit_sha()}.csv"
+    corr_result_filename = (
+        f"corr_result_{now}_{get_current_commit_sha()}.csv"
     )
     desc_stats_filename = (
         f"descriptive_stats_{now}_{get_current_commit_sha()}.csv"
@@ -78,8 +78,8 @@ def main() -> None:
 
     df = pd.DataFrame(data).set_index("name")
 
-    df.drop(columns=DESC_STATS_COLUMNS).to_csv(str(Path("output") / p_result_filename))
-    df[DESC_STATS_COLUMNS].to_csv(str(Path("output") /desc_stats_filename))
+    df.drop(columns=DESC_STATS_COLUMNS).to_csv(str(Path("output") / corr_result_filename))
+    df[DESC_STATS_COLUMNS].to_csv(str(Path("output") / desc_stats_filename))
 
 
 if __name__ == "__main__":

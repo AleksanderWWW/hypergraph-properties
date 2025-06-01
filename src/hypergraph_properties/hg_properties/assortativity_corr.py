@@ -31,7 +31,7 @@ def corr_assort(hg: Hypergraph) -> list[CorrResult]:
 
     results = []
     for algo in ALGOS.values():
-        corr = stats.pearsonr(degrees, he_sizes)
+        corr = algo(degrees, he_sizes)
         results.append(
             CorrResult(
                 statistic=corr.statistic,

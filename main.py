@@ -16,6 +16,20 @@ from hypergraph_properties.utils.git_info import get_current_commit_sha
 
 logger = get_logger()
 
+DESC_STATS_COLUMNS = [
+    "avg_degree",
+    "avg_he_size",
+    "degree_sd",
+    "he_size_sd",
+    "min_degree",
+    "max_degree",
+    "min_he_size",
+    "max_he_size",
+    "n_incidence_edges",
+    "n_vertices",
+    "n_edges",
+]
+
 
 def main() -> None:
     data = []
@@ -53,8 +67,19 @@ def main() -> None:
 
         data.append(result.to_dict())
 
-    filename = f"pipeline_result_{int(time.time())}_{get_current_commit_sha()}.csv"
-    pd.DataFrame(data).set_index("name").to_csv(filename)
+    now = int(time.time())
+
+    p_result_filename = (
+        f"pipeline_result_{now}_{get_current_commit_sha()}.csv"
+    )
+    desc_stats_filename = (
+        f"descriptive_stats_{now}_{get_current_commit_sha()}.csv"
+    )
+
+    df = pd.DataFrame(data).set_index("name")
+
+    df.drop(columns=DESC_STATS_COLUMNS).to_csv(str(Path("output") / p_result_filename))
+    df[DESC_STATS_COLUMNS].to_csv(str(Path("output") /desc_stats_filename))
 
 
 if __name__ == "__main__":

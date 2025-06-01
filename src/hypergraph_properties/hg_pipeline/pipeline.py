@@ -12,6 +12,7 @@ from hypergraph_properties.hg_pipeline.result_set import (
     HGPipelineResult,
     PearsonEdgeCorrResult,
     PearsonNodeCorrResult,
+    HGDescriptiveStats,
 )
 from hypergraph_properties.hg_properties.corr import (
     pearson_edge_corr,
@@ -23,6 +24,17 @@ from hypergraph_properties.hg_properties.corr import (
     kendalltau_edge_corr,
 )
 from hypergraph_properties.hg_properties.assortativity_corr import corr_assort
+from hypergraph_properties.hg_properties.descriptive_stats import (
+    get_avg_degree,
+    get_avg_he_size,
+    get_degree_sd,
+    get_he_size_sd,
+    get_min_degree,
+    get_max_degree,
+    get_min_he_size,
+    get_max_he_size,
+    get_n_incidence_edges,
+)
 from hypergraph_properties.hg_reader import HypergraphReader
 
 
@@ -71,14 +83,26 @@ def run_pipeline(
             k_cor_edge = kendalltau_edge_corr(hg)
             pbar.update(1)
 
-
         a_cor = corr_assort(hg)
         pbar.update(3)
 
     p_node_cor = PearsonNodeCorrResult(*cors_node_p)
     p_edge_cor = PearsonEdgeCorrResult(*cors_edge_p)
 
+    desc_stats = HGDescriptiveStats(
+        avg_degree=get_avg_degree(hg),
+        avg_he_size=get_avg_he_size(hg),
+        degree_sd=get_degree_sd(hg),
+        he_size_sd=get_he_size_sd(hg),
+        min_degree=get_min_degree(hg),
+        max_degree=get_max_degree(hg),
+        min_he_size=get_min_he_size(hg),
+        max_he_size=get_max_he_size(hg),
+        n_incidence_edges=get_n_incidence_edges(hg),
+    )
+
     return HGPipelineResult(
+        desc_stats=desc_stats,
         pearson_node_corr=p_node_cor,
         pearson_edge_corr=p_edge_cor,
         spearman_node_corr=s_cor_node,

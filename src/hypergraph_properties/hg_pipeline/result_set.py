@@ -22,6 +22,8 @@ class HGDescriptiveStats:
     min_he_size: float
     max_he_size: float
     n_incidence_edges: int
+    degree_skew: float
+    he_size_skew: float
 
     def to_dict(self) -> dict:
         return {
@@ -34,6 +36,8 @@ class HGDescriptiveStats:
             "min_he_size": self.min_he_size,
             "max_he_size": self.max_he_size,
             "n_incidence_edges": self.n_incidence_edges,
+            "degree_skew": self.degree_skew,
+            "he_size_skew": self.he_size_skew,
         }
 
 

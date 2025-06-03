@@ -28,6 +28,8 @@ DESC_STATS_COLUMNS = [
     "n_incidence_edges",
     "n_vertices",
     "n_edges",
+    "degree_skew",
+    "he_size_skew",
 ]
 
 

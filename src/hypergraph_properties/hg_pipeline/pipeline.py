@@ -33,7 +33,7 @@ from hypergraph_properties.hg_properties.descriptive_stats import (
     get_max_degree,
     get_min_he_size,
     get_max_he_size,
-    get_n_incidence_edges,
+    get_n_incidence_edges, get_degree_skew, get_he_skew,
 )
 from hypergraph_properties.hg_reader import HypergraphReader
 
@@ -99,6 +99,8 @@ def run_pipeline(
         min_he_size=get_min_he_size(hg),
         max_he_size=get_max_he_size(hg),
         n_incidence_edges=get_n_incidence_edges(hg),
+        degree_skew=get_degree_skew(hg),
+        he_size_skew=get_he_skew(hg),
     )
 
     return HGPipelineResult(

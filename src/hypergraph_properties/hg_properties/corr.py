@@ -18,7 +18,6 @@ from scipy.sparse import csr_array
 
 from hypergraph_properties.hg_model import Hypergraph
 from hypergraph_properties.hg_properties.utils import (
-    with_empty_rows_removed,
     CorAlgorithm,
     ALGOS,
 )
@@ -91,7 +90,7 @@ def corr(
     if algorithm not in ALGOS:
         raise ValueError(f"'{algorithm}' is not a valid algorithm.")
 
-    matrix = with_empty_rows_removed(matrix=hg.matrix)
+    matrix = hg.matrix
 
     global _cache
 

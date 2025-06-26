@@ -69,7 +69,7 @@ def spearman_edge_corr(hg: Hypergraph) -> CorrResult:
 
 def kendalltau_edge_corr(hg: Hypergraph) -> CorrResult:
     hg.matrix = hg.matrix.transpose().tocsr()
-    return corr(hg, False, False, algorithm=CorAlgorithm.KENDALLTAU)
+    return corr(hg, False, False, algorithm=CorAlgorithm.KENDALLTAU, centric="edge")
 
 
 _cache = {}

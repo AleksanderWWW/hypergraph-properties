@@ -79,6 +79,7 @@ def main() -> None:
     )
 
     df = pd.DataFrame(data).set_index("name")
+    breakpoint()
 
     df.drop(columns=DESC_STATS_COLUMNS).to_csv(str(Path("output") / corr_result_filename))
     df[DESC_STATS_COLUMNS].to_csv(str(Path("output") / desc_stats_filename))
